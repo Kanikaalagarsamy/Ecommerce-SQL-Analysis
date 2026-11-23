@@ -1,0 +1,204 @@
+
+-- =================================================
+-- PROJECT: E-Commerce Sales & Customer Analysis
+-- FILE: 05_Joins_Subqueries.sql
+-- PURPOSE: Practice SQL Joins and Subqueries
+-- =================================================
+
+USE ecommerce_analysis;
+
+
+-- ==========================================
+-- PART A: SQL JOINS
+-- ==========================================
+
+-- 1. INNER JOIN: Display customers and their orders
+SELECT
+    C.Customer_ID,
+    C.First_Name,
+    C.Last_Name,
+    O.Order_ID,
+    O.Order_Date
+FROM Customers C
+INNER JOIN Orders O
+    ON C.Customer_ID = O.Customer_ID;
+
+
+-- 2. LEFT JOIN: Display all customers and their orders
+SELECT
+    C.Customer_ID,
+    C.First_Name,
+    O.Order_ID
+FROM Customers C
+LEFT JOIN Orders O
+    ON C.Customer_ID = O.Customer_ID;
+
+
+-- 3. RIGHT JOIN: Display all products and purchased products
+SELECT
+    P.Product_ID,
+    P.Product_Name,
+    OD.Order_ID,
+    OD.Quantity
+FROM Order_Details OD
+RIGHT JOIN Products P
+    ON OD.Product_ID = P.Product_ID;
+
+
+-- 4. Multiple JOINs: Display order details with product names
+SELECT
+    OD.Order_ID,
+    P.Product_Name,
+    OD.Quantity,
+    OD.Unit_Price,
+    (OD.Quantity * OD.Unit_Price) AS Item_Total
+FROM Order_Details OD
+INNER JOIN Products P
+    ON OD.Product_ID = P.Product_ID;
+
+
+-- 5. Display customer names and total order value
+SELECT
+    C.Customer_ID,
+    C.First_Name,
+    C.Last_Name,
+    SUM(OD.Quantity * OD.Unit_Price) AS Total_Spending
+FROM Customers C
+INNER JOIN Orders O
+    ON C.Customer_ID = O.Customer_ID
+INNER JOIN Order_Details OD
+    ON O.Order_ID = OD.Order_ID
+GROUP BY C.Customer_ID, C.First_Name, C.Last_Name
+ORDER BY Total_Spending DESC;
+
+
+-- 6. Display order ID, customer name and payment status
+SELECT
+    O.Order_ID,
+    C.First_Name,
+    C.Last_Name,
+    PY.Amount,
+    PY.Payment_Status
+FROM Orders O
+INNER JOIN Customers C
+    ON O.Customer_ID = C.Customer_ID
+INNER JOIN Payments PY
+    ON O.Order_ID = PY.Order_ID;
+
+
+-- 7. Display product names with their total quantities ordered
+SELECT
+    P.Product_Name,
+    SUM(OD.Quantity) AS Total_Quantity
+FROM Products P
+INNER JOIN Order_Details OD
+    ON P.Product_ID = OD.Product_ID
+GROUP BY P.Product_ID, P.Product_Name
+ORDER BY Total_Quantity DESC;
+
+
+-- ==========================================
+-- PART B: SQL SUBQUERIES
+-- ==========================================
+
+-- 8. Find products priced above the average product price
+SELECT *
+FROM Products
+WHERE Price > (
+    SELECT AVG(Price)
+    FROM Products
+);
+
+
+-- 9. Find customers who have placed orders
+SELECT *
+FROM Customers
+WHERE Customer_ID IN (
+    SELECT Customer_ID
+    FROM Orders
+);
+
+
+-- 10. Find customers who have never placed an order
+SELECT *
+FROM Customers
+WHERE Customer_ID NOT IN (
+    SELECT Customer_ID
+    FROM Orders
+);
+
+
+-- 11. Find the most expensive product
+SELECT *
+FROM Products
+WHERE Price = (
+    SELECT MAX(Price)
+    FROM Products
+);
+
+
+-- 12. Find orders with payment amounts above average
+SELECT *
+FROM Payments
+WHERE Amount > (
+    SELECT AVG(Amount)
+    FROM Payments
+);
+
+
+-- 13. Find customers spending more than average customer spending
+SELECT
+    C.Customer_ID,
+    C.First_Name,
+    C.Last_Name,
+    SUM(OD.Quantity * OD.Unit_Price) AS Total_Spending
+FROM Customers C
+INNER JOIN Orders O
+    ON C.Customer_ID = O.Customer_ID
+INNER JOIN Order_Details OD
+    ON O.Order_ID = OD.Order_ID
+GROUP BY C.Customer_ID, C.First_Name, C.Last_Name
+HAVING SUM(OD.Quantity * OD.Unit_Price) > (
+    SELECT AVG(Customer_Total)
+    FROM (
+        SELECT
+            SUM(OD2.Quantity * OD2.Unit_Price) AS Customer_Total
+        FROM Orders O2
+        INNER JOIN Order_Details OD2
+            ON O2.Order_ID = OD2.Order_ID
+        GROUP BY O2.Customer_ID
+    ) AS Customer_Spending
+);
+
+
+-- 14. Find products that have never been ordered
+SELECT *
+FROM Products
+WHERE Product_ID NOT IN (
+    SELECT Product_ID
+    FROM Order_Details
+);
+
+
+-- 15. Find orders whose payment status is Paid
+SELECT *
+FROM Orders
+WHERE Order_ID IN (
+    SELECT Order_ID
+    FROM Payments
+    WHERE Payment_Status = 'Paid'
+);
+
+
+-- 16. Find customers who have made more than one order
+SELECT
+    C.Customer_ID,
+    C.First_Name,
+    C.Last_Name
+FROM Customers C
+WHERE C.Customer_ID IN (
+    SELECT Customer_ID
+    FROM Orders
+    GROUP BY Customer_ID
+    HAVING COUNT(*) > 1
+);

@@ -1,0 +1,64 @@
+
+-- ==========================================
+-- FILE: 02_Create_Tables.sql
+-- PURPOSE: Create all project tables
+-- ==========================================
+
+USE ecommerce_analysis;
+
+-- 1. Customers Table
+CREATE TABLE Customers (
+    Customer_ID INT PRIMARY KEY AUTO_INCREMENT,
+    First_Name VARCHAR(50) NOT NULL,
+    Last_Name VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    City VARCHAR(50),
+    Registration_Date DATE
+);
+
+-- 2. Products Table
+CREATE TABLE Products (
+    Product_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Product_Name VARCHAR(100) NOT NULL,
+    Category VARCHAR(50) NOT NULL,
+    Price DECIMAL(10,2) NOT NULL,
+    Stock INT DEFAULT 0
+);
+
+-- 3. Orders Table
+CREATE TABLE Orders (
+    Order_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Customer_ID INT NOT NULL,
+    Order_Date DATE NOT NULL,
+    Status VARCHAR(30) DEFAULT 'Pending',
+    FOREIGN KEY (Customer_ID)
+        REFERENCES Customers(Customer_ID)
+);
+
+-- 4. Order Details Table
+CREATE TABLE Order_Details (
+    Detail_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Order_ID INT NOT NULL,
+    Product_ID INT NOT NULL,
+    Quantity INT NOT NULL,
+    Unit_Price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (Order_ID)
+        REFERENCES Orders(Order_ID),
+    FOREIGN KEY (Product_ID)
+        REFERENCES Products(Product_ID)
+);
+
+-- 5. Payments Table
+CREATE TABLE Payments (
+    Payment_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Order_ID INT NOT NULL,
+    Amount DECIMAL(10,2) NOT NULL,
+    Payment_Method VARCHAR(30),
+    Payment_Date DATE,
+    Payment_Status VARCHAR(30) DEFAULT 'Pending',
+    FOREIGN KEY (Order_ID)
+        REFERENCES Orders(Order_ID)
+);
+
+-- Verify all five tables
+SHOW TABLES;

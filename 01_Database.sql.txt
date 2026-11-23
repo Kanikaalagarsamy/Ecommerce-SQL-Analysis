@@ -1,0 +1,13 @@
+
+-- ==========================================
+-- PROJECT: E-Commerce Sales & Customer Analysis
+-- FILE: 01_Database.sql
+-- PURPOSE: Create the project database
+-- ==========================================
+
+CREATE DATABASE IF NOT EXISTS ecommerce_analysis;
+
+USE ecommerce_analysis;
+
+-- Check the selected database
+SELECT DATABASE();

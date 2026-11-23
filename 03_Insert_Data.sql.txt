@@ -1,0 +1,115 @@
+
+-- ==========================================
+-- FILE: 03_Insert_Data.sql
+-- PURPOSE: Insert sample e-commerce data
+-- ==========================================
+
+USE ecommerce_analysis;
+
+-- 1. Insert Customers
+INSERT INTO Customers
+(Customer_ID, First_Name, Last_Name, Email, City, Registration_Date)
+VALUES
+(1, 'Arun', 'Kumar', 'arun@gmail.com', 'Chennai', '2026-01-10'),
+(2, 'Priya', 'Sharma', 'priya@gmail.com', 'Coimbatore', '2026-01-15'),
+(3, 'Rahul', 'Verma', 'rahul@gmail.com', 'Bangalore', '2026-02-05'),
+(4, 'Sneha', 'Ravi', 'sneha@gmail.com', 'Chennai', '2026-02-12'),
+(5, 'Karthik', 'Raj', 'karthik@gmail.com', 'Madurai', '2026-03-01'),
+(6, 'Divya', 'Mohan', 'divya@gmail.com', 'Coimbatore', '2026-03-15'),
+(7, 'Vijay', 'Kumar', 'vijay@gmail.com', 'Hyderabad', '2026-04-02'),
+(8, 'Anjali', 'Devi', 'anjali@gmail.com', 'Bangalore', '2026-04-10'),
+(9, 'Suresh', 'Babu', 'suresh@gmail.com', 'Chennai', '2026-05-01'),
+(10, 'Meena', 'Lakshmi', 'meena@gmail.com', 'Madurai', '2026-05-12');
+
+
+-- 2. Insert Products
+INSERT INTO Products
+(Product_ID, Product_Name, Category, Price, Stock)
+VALUES
+(1, 'Laptop', 'Electronics', 55000, 20),
+(2, 'Smartphone', 'Electronics', 25000, 35),
+(3, 'Headphones', 'Electronics', 2000, 50),
+(4, 'Keyboard', 'Accessories', 1500, 40),
+(5, 'Mouse', 'Accessories', 800, 60),
+(6, 'Smartwatch', 'Electronics', 5000, 25),
+(7, 'Office Chair', 'Furniture', 7500, 15),
+(8, 'Desk', 'Furniture', 12000, 10),
+(9, 'Backpack', 'Accessories', 1800, 30),
+(10, 'Monitor', 'Electronics', 15000, 18);
+
+
+-- 3. Insert Orders
+INSERT INTO Orders
+(Order_ID, Customer_ID, Order_Date, Status)
+VALUES
+(1, 1, '2026-06-01', 'Delivered'),
+(2, 2, '2026-06-02', 'Delivered'),
+(3, 3, '2026-06-05', 'Shipped'),
+(4, 4, '2026-06-07', 'Delivered'),
+(5, 5, '2026-06-10', 'Pending'),
+(6, 1, '2026-06-12', 'Delivered'),
+(7, 6, '2026-06-15', 'Delivered'),
+(8, 7, '2026-06-18', 'Cancelled'),
+(9, 8, '2026-07-01', 'Delivered'),
+(10, 9, '2026-07-05', 'Shipped'),
+(11, 2, '2026-07-08', 'Delivered'),
+(12, 3, '2026-07-12', 'Delivered'),
+(13, 10, '2026-07-15', 'Pending'),
+(14, 4, '2026-07-20', 'Delivered'),
+(15, 5, '2026-07-25', 'Delivered');
+
+
+-- 4. Insert Order Details
+INSERT INTO Order_Details
+(Detail_ID, Order_ID, Product_ID, Quantity, Unit_Price)
+VALUES
+(1, 1, 1, 1, 55000),
+(2, 1, 3, 2, 2000),
+(3, 2, 2, 1, 25000),
+(4, 2, 5, 2, 800),
+(5, 3, 6, 1, 5000),
+(6, 3, 4, 1, 1500),
+(7, 4, 10, 1, 15000),
+(8, 5, 7, 1, 7500),
+(9, 6, 3, 1, 2000),
+(10, 6, 9, 2, 1800),
+(11, 7, 8, 1, 12000),
+(12, 8, 2, 1, 25000),
+(13, 9, 1, 1, 55000),
+(14, 9, 5, 1, 800),
+(15, 10, 4, 2, 1500),
+(16, 11, 6, 1, 5000),
+(17, 11, 3, 1, 2000),
+(18, 12, 2, 1, 25000),
+(19, 13, 9, 1, 1800),
+(20, 14, 10, 2, 15000),
+(21, 15, 7, 1, 7500);
+
+
+-- 5. Insert Payments
+INSERT INTO Payments
+(Payment_ID, Order_ID, Amount, Payment_Method, Payment_Date, Payment_Status)
+VALUES
+(1, 1, 59000, 'Credit Card', '2026-06-01', 'Paid'),
+(2, 2, 26600, 'UPI', '2026-06-02', 'Paid'),
+(3, 3, 6500, 'Debit Card', '2026-06-05', 'Paid'),
+(4, 4, 15000, 'UPI', '2026-06-07', 'Paid'),
+(5, 5, 7500, 'Cash', '2026-06-10', 'Pending'),
+(6, 6, 5600, 'UPI', '2026-06-12', 'Paid'),
+(7, 7, 12000, 'Credit Card', '2026-06-15', 'Paid'),
+(8, 8, 25000, 'UPI', '2026-06-18', 'Refunded'),
+(9, 9, 55800, 'Credit Card', '2026-07-01', 'Paid'),
+(10, 10, 3000, 'UPI', '2026-07-05', 'Paid'),
+(11, 11, 7000, 'Debit Card', '2026-07-08', 'Paid'),
+(12, 12, 25000, 'UPI', '2026-07-12', 'Paid'),
+(13, 13, 1800, 'Cash', '2026-07-15', 'Pending'),
+(14, 14, 30000, 'Credit Card', '2026-07-20', 'Paid'),
+(15, 15, 7500, 'UPI', '2026-07-25', 'Paid');
+
+
+-- Verify inserted records
+SELECT COUNT(*) AS Total_Customers FROM Customers;
+SELECT COUNT(*) AS Total_Products FROM Products;
+SELECT COUNT(*) AS Total_Orders FROM Orders;
+SELECT COUNT(*) AS Total_Order_Details FROM Order_Details;
+SELECT COUNT(*) AS Total_Payments FROM Payments;

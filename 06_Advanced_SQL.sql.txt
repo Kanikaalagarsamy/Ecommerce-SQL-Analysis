@@ -1,0 +1,207 @@
+
+-- =================================================
+-- PROJECT: E-Commerce Sales & Customer Analysis
+-- FILE: 06_Advanced_SQL.sql
+-- PURPOSE: Advanced SQL concepts
+-- =================================================
+
+USE ecommerce_analysis;
+
+
+-- ==========================================
+-- PART A: COMMON TABLE EXPRESSIONS (CTEs)
+-- ==========================================
+
+-- 1. Find products priced above average using CTE
+
+WITH Average_Price AS (
+    SELECT AVG(Price) AS Avg_Price
+    FROM Products
+)
+SELECT
+    P.Product_Name,
+    P.Price
+FROM Products P
+CROSS JOIN Average_Price A
+WHERE P.Price > A.Avg_Price;
+
+
+-- 2. Find customers and their total spending
+
+WITH Customer_Spending AS (
+    SELECT
+        O.Customer_ID,
+        SUM(OD.Quantity * OD.Unit_Price) AS Total_Spending
+    FROM Orders O
+    INNER JOIN Order_Details OD
+        ON O.Order_ID = OD.Order_ID
+    GROUP BY O.Customer_ID
+)
+SELECT
+    C.First_Name,
+    C.Last_Name,
+    CS.Total_Spending
+FROM Customer_Spending CS
+INNER JOIN Customers C
+    ON CS.Customer_ID = C.Customer_ID
+ORDER BY CS.Total_Spending DESC;
+
+
+-- ==========================================
+-- PART B: WINDOW FUNCTIONS
+-- ==========================================
+
+-- 3. Assign row numbers to products by price
+
+SELECT
+    Product_Name,
+    Price,
+    ROW_NUMBER() OVER (
+        ORDER BY Price DESC
+    ) AS Row_Number
+FROM Products;
+
+
+-- 4. Rank products based on price
+
+SELECT
+    Product_Name,
+    Price,
+    RANK() OVER (
+        ORDER BY Price DESC
+    ) AS Product_Rank
+FROM Products;
+
+
+-- 5. Dense rank products based on price
+
+SELECT
+    Product_Name,
+    Price,
+    DENSE_RANK() OVER (
+        ORDER BY Price DESC
+    ) AS Dense_Rank
+FROM Products;
+
+
+-- 6. Rank customers based on their spending
+
+WITH Customer_Spending AS (
+    SELECT
+        O.Customer_ID,
+        SUM(OD.Quantity * OD.Unit_Price) AS Total_Spending
+    FROM Orders O
+    INNER JOIN Order_Details OD
+        ON O.Order_ID = OD.Order_ID
+    GROUP BY O.Customer_ID
+)
+SELECT
+    C.First_Name,
+    C.Last_Name,
+    CS.Total_Spending,
+    RANK() OVER (
+        ORDER BY CS.Total_Spending DESC
+    ) AS Spending_Rank
+FROM Customer_Spending CS
+INNER JOIN Customers C
+    ON CS.Customer_ID = C.Customer_ID;
+
+
+-- 7. Rank products within each category
+
+SELECT
+    Product_Name,
+    Category,
+    Price,
+    RANK() OVER (
+        PARTITION BY Category
+        ORDER BY Price DESC
+    ) AS Category_Rank
+FROM Products;
+
+
+-- 8. Calculate running total of monthly paid revenue
+
+WITH Monthly_Revenue AS (
+    SELECT
+        DATE_FORMAT(Payment_Date, '%Y-%m') AS Revenue_Month,
+        SUM(Amount) AS Total_Revenue
+    FROM Payments
+    WHERE Payment_Status = 'Paid'
+    GROUP BY DATE_FORMAT(Payment_Date, '%Y-%m')
+)
+SELECT
+    Revenue_Month,
+    Total_Revenue,
+    SUM(Total_Revenue) OVER (
+        ORDER BY Revenue_Month
+    ) AS Running_Total
+FROM Monthly_Revenue;
+
+
+-- 9. Find previous month's revenue
+
+WITH Monthly_Revenue AS (
+    SELECT
+        DATE_FORMAT(Payment_Date, '%Y-%m') AS Revenue_Month,
+        SUM(Amount) AS Total_Revenue
+    FROM Payments
+    WHERE Payment_Status = 'Paid'
+    GROUP BY DATE_FORMAT(Payment_Date, '%Y-%m')
+)
+SELECT
+    Revenue_Month,
+    Total_Revenue,
+    LAG(Total_Revenue) OVER (
+        ORDER BY Revenue_Month
+    ) AS Previous_Month_Revenue
+FROM Monthly_Revenue;
+
+
+-- ==========================================
+-- PART C: SQL VIEWS
+-- ==========================================
+
+-- 10. Create a view for customer order details
+
+CREATE OR REPLACE VIEW Customer_Order_View AS
+SELECT
+    C.Customer_ID,
+    C.First_Name,
+    C.Last_Name,
+    O.Order_ID,
+    O.Order_Date,
+    O.Status
+FROM Customers C
+INNER JOIN Orders O
+    ON C.Customer_ID = O.Customer_ID;
+
+
+-- 11. Display data from the view
+
+SELECT *
+FROM Customer_Order_View;
+
+
+-- 12. Create a view for paid revenue
+
+CREATE OR REPLACE VIEW Paid_Revenue_View AS
+SELECT
+    Order_ID,
+    Amount,
+    Payment_Method,
+    Payment_Date
+FROM Payments
+WHERE Payment_Status = 'Paid';
+
+
+-- 13. Display paid revenue view
+
+SELECT *
+FROM Paid_Revenue_View;
+
+
+-- 14. Calculate total paid revenue using the view
+
+SELECT SUM(Amount) AS Total_Paid_Revenue
+FROM Paid_Revenue_View;

@@ -1,0 +1,145 @@
+
+-- =================================================
+-- PROJECT: E-Commerce Sales & Customer Analysis
+-- FILE: 04_Basic_Queries.sql
+-- PURPOSE: Basic SQL operations and data analysis
+-- =================================================
+
+USE ecommerce_analysis;
+
+
+-- 1. Display all customers
+SELECT *
+FROM Customers;
+
+
+-- 2. Display all products
+SELECT *
+FROM Products;
+
+
+-- 3. Display customer names and cities
+SELECT First_Name, Last_Name, City
+FROM Customers;
+
+
+-- 4. Find customers from Chennai
+SELECT *
+FROM Customers
+WHERE City = 'Chennai';
+
+
+-- 5. Find products costing more than 5000
+SELECT *
+FROM Products
+WHERE Price > 5000;
+
+
+-- 6. Find products between 1000 and 20000
+SELECT *
+FROM Products
+WHERE Price BETWEEN 1000 AND 20000;
+
+
+-- 7. Find customers from Chennai or Bangalore
+SELECT *
+FROM Customers
+WHERE City IN ('Chennai', 'Bangalore');
+
+
+-- 8. Find products containing the word 'phone'
+SELECT *
+FROM Products
+WHERE Product_Name LIKE '%phone%';
+
+
+-- 9. Display products from highest to lowest price
+SELECT *
+FROM Products
+ORDER BY Price DESC;
+
+
+-- 10. Display the five most expensive products
+SELECT *
+FROM Products
+ORDER BY Price DESC
+LIMIT 5;
+
+
+-- 11. Count total customers
+SELECT COUNT(*) AS Total_Customers
+FROM Customers;
+
+
+-- 12. Find the average product price
+SELECT AVG(Price) AS Average_Product_Price
+FROM Products;
+
+
+-- 13. Find the highest product price
+SELECT MAX(Price) AS Highest_Product_Price
+FROM Products;
+
+
+-- 14. Find the lowest product price
+SELECT MIN(Price) AS Lowest_Product_Price
+FROM Products;
+
+
+-- 15. Calculate total inventory stock
+SELECT SUM(Stock) AS Total_Stock
+FROM Products;
+
+
+-- 16. Count customers in each city
+SELECT City, COUNT(*) AS Total_Customers
+FROM Customers
+GROUP BY City;
+
+
+-- 17. Find the average price of each product category
+SELECT Category, AVG(Price) AS Average_Price
+FROM Products
+GROUP BY Category;
+
+
+-- 18. Find categories with more than two products
+SELECT Category, COUNT(*) AS Product_Count
+FROM Products
+GROUP BY Category
+HAVING COUNT(*) > 2;
+
+
+-- 19. Count orders by their status
+SELECT Status, COUNT(*) AS Total_Orders
+FROM Orders
+GROUP BY Status;
+
+
+-- 20. Display orders placed in July 2026
+SELECT *
+FROM Orders
+WHERE Order_Date BETWEEN '2026-07-01' AND '2026-07-31';
+
+
+-- 21. Find products with stock below 20
+SELECT *
+FROM Products
+WHERE Stock < 20;
+
+
+-- 22. Find total quantity sold for each product
+SELECT Product_ID, SUM(Quantity) AS Total_Quantity_Sold
+FROM Order_Details
+GROUP BY Product_ID
+ORDER BY Total_Quantity_Sold DESC;
+
+
+-- 23. Count the total number of orders
+SELECT COUNT(*) AS Total_Orders
+FROM Orders;
+
+
+-- 24. Calculate total order value using order details
+SELECT SUM(Quantity * Unit_Price) AS Total_Order_Value
+FROM Order_Details;

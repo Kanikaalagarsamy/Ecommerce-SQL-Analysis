@@ -1,0 +1,224 @@
+
+-- =================================================
+-- PROJECT: E-Commerce Sales & Customer Analysis
+-- FILE: 07_Business_Analysis.sql
+-- PURPOSE: Business and sales analysis
+-- =================================================
+
+USE ecommerce_analysis;
+
+
+-- ==========================================
+-- 1. TOTAL PAID REVENUE
+-- ==========================================
+
+SELECT
+    SUM(Amount) AS Total_Revenue
+FROM Payments
+WHERE Payment_Status = 'Paid';
+
+
+-- ==========================================
+-- 2. MONTHLY REVENUE
+-- ==========================================
+
+SELECT
+    MONTHNAME(Payment_Date) AS Revenue_Month,
+    SUM(Amount) AS Monthly_Revenue
+FROM Payments
+WHERE Payment_Status = 'Paid'
+GROUP BY MONTH(Payment_Date), MONTHNAME(Payment_Date)
+ORDER BY MONTH(Payment_Date);
+
+
+-- ==========================================
+-- 3. TOP 5 PRODUCTS BY PAID REVENUE
+-- ==========================================
+
+SELECT
+    P.Product_Name,
+    SUM(OD.Quantity * OD.Unit_Price) AS Total_Revenue
+FROM Products P
+INNER JOIN Order_Details OD
+    ON P.Product_ID = OD.Product_ID
+INNER JOIN Payments PY
+    ON OD.Order_ID = PY.Order_ID
+WHERE PY.Payment_Status = 'Paid'
+GROUP BY P.Product_ID, P.Product_Name
+ORDER BY Total_Revenue DESC
+LIMIT 5;
+
+
+-- ==========================================
+-- 4. TOP 5 CUSTOMERS BY PAID SPENDING
+-- ==========================================
+
+SELECT
+    C.Customer_ID,
+    C.First_Name,
+    C.Last_Name,
+    SUM(PY.Amount) AS Total_Spending
+FROM Customers C
+INNER JOIN Orders O
+    ON C.Customer_ID = O.Customer_ID
+INNER JOIN Payments PY
+    ON O.Order_ID = PY.Order_ID
+WHERE PY.Payment_Status = 'Paid'
+GROUP BY C.Customer_ID, C.First_Name, C.Last_Name
+ORDER BY Total_Spending DESC
+LIMIT 5;
+
+
+-- ==========================================
+-- 5. REVENUE BY CITY
+-- ==========================================
+
+SELECT
+    C.City,
+    SUM(PY.Amount) AS City_Revenue
+FROM Customers C
+INNER JOIN Orders O
+    ON C.Customer_ID = O.Customer_ID
+INNER JOIN Payments PY
+    ON O.Order_ID = PY.Order_ID
+WHERE PY.Payment_Status = 'Paid'
+GROUP BY C.City
+ORDER BY City_Revenue DESC;
+
+
+-- ==========================================
+-- 6. REPEAT CUSTOMERS
+-- ==========================================
+
+SELECT
+    C.Customer_ID,
+    C.First_Name,
+    C.Last_Name,
+    COUNT(PY.Payment_ID) AS Paid_Order_Count
+FROM Customers C
+INNER JOIN Orders O
+    ON C.Customer_ID = O.Customer_ID
+INNER JOIN Payments PY
+    ON O.Order_ID = PY.Order_ID
+WHERE PY.Payment_Status = 'Paid'
+GROUP BY C.Customer_ID, C.First_Name, C.Last_Name
+HAVING COUNT(PY.Payment_ID) > 1
+ORDER BY Paid_Order_Count DESC;
+
+
+-- ==========================================
+-- 7. PAYMENT METHOD ANALYSIS
+-- ==========================================
+
+SELECT
+    Payment_Method,
+    COUNT(*) AS Total_Payments,
+    SUM(Amount) AS Total_Amount
+FROM Payments
+WHERE Payment_Status = 'Paid'
+GROUP BY Payment_Method
+ORDER BY Total_Amount DESC;
+
+
+-- ==========================================
+-- 8. ORDER STATUS ANALYSIS
+-- ==========================================
+
+SELECT
+    Status,
+    COUNT(*) AS Total_Orders
+FROM Orders
+GROUP BY Status;
+
+
+-- ==========================================
+-- 9. CANCELLED AND REFUNDED ORDERS
+-- ==========================================
+
+SELECT
+    O.Status AS Order_Status,
+    PY.Payment_Status,
+    COUNT(*) AS Total_Orders,
+    SUM(PY.Amount) AS Total_Amount
+FROM Orders O
+INNER JOIN Payments PY
+    ON O.Order_ID = PY.Order_ID
+WHERE O.Status = 'Cancelled'
+   OR PY.Payment_Status = 'Refunded'
+GROUP BY O.Status, PY.Payment_Status;
+
+
+-- ==========================================
+-- 10. REVENUE BY PRODUCT CATEGORY
+-- ==========================================
+
+SELECT
+    P.Category,
+    SUM(OD.Quantity * OD.Unit_Price) AS Category_Revenue
+FROM Products P
+INNER JOIN Order_Details OD
+    ON P.Product_ID = OD.Product_ID
+INNER JOIN Payments PY
+    ON OD.Order_ID = PY.Order_ID
+WHERE PY.Payment_Status = 'Paid'
+GROUP BY P.Category
+ORDER BY Category_Revenue DESC;
+
+
+-- ==========================================
+-- 11. AVERAGE ORDER VALUE
+-- ==========================================
+
+SELECT
+    AVG(Amount) AS Average_Order_Value
+FROM Payments
+WHERE Payment_Status = 'Paid';
+
+
+-- ==========================================
+-- 12. PRODUCTS NEVER PURCHASED IN PAID ORDERS
+-- ==========================================
+
+SELECT
+    P.Product_ID,
+    P.Product_Name
+FROM Products P
+LEFT JOIN Order_Details OD
+    ON P.Product_ID = OD.Product_ID
+LEFT JOIN Payments PY
+    ON OD.Order_ID = PY.Order_ID
+    AND PY.Payment_Status = 'Paid'
+WHERE PY.Payment_ID IS NULL;
+
+
+-- ==========================================
+-- 13. FINAL BUSINESS SUMMARY
+-- ==========================================
+
+SELECT
+    'Total Paid Revenue' AS Metric,
+    SUM(Amount) AS Value
+FROM Payments
+WHERE Payment_Status = 'Paid'
+
+UNION ALL
+
+SELECT
+    'Paid Orders',
+    COUNT(*)
+FROM Payments
+WHERE Payment_Status = 'Paid'
+
+UNION ALL
+
+SELECT
+    'Total Customers',
+    COUNT(*)
+FROM Customers
+
+UNION ALL
+
+SELECT
+    'Total Products',
+    COUNT(*)
+FROM Products;
