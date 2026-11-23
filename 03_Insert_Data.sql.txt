@@ -1,8 +1,4 @@
 
--- ==========================================
--- FILE: 03_Insert_Data.sql
--- PURPOSE: Insert sample e-commerce data
--- ==========================================
 
 USE ecommerce_analysis;
 
@@ -107,7 +103,7 @@ VALUES
 (15, 15, 7500, 'UPI', '2026-07-25', 'Paid');
 
 
--- Verify inserted records
+--  To Verify inserted records
 SELECT COUNT(*) AS Total_Customers FROM Customers;
 SELECT COUNT(*) AS Total_Products FROM Products;
 SELECT COUNT(*) AS Total_Orders FROM Orders;
