@@ -1,10 +1,3 @@
-
--- =================================================
--- PROJECT: E-Commerce Sales & Customer Analysis
--- FILE: 06_Advanced_SQL.sql
--- PURPOSE: Advanced SQL concepts
--- =================================================
-
 USE ecommerce_analysis;
 
 
