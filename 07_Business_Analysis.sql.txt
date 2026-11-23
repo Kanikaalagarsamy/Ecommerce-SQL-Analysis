@@ -1,16 +1,8 @@
-
--- =================================================
--- PROJECT: E-Commerce Sales & Customer Analysis
--- FILE: 07_Business_Analysis.sql
--- PURPOSE: Business and sales analysis
--- =================================================
-
 USE ecommerce_analysis;
 
 
--- ==========================================
 -- 1. TOTAL PAID REVENUE
--- ==========================================
+
 
 SELECT
     SUM(Amount) AS Total_Revenue
@@ -18,9 +10,9 @@ FROM Payments
 WHERE Payment_Status = 'Paid';
 
 
--- ==========================================
+
 -- 2. MONTHLY REVENUE
--- ==========================================
+
 
 SELECT
     MONTHNAME(Payment_Date) AS Revenue_Month,
@@ -31,9 +23,9 @@ GROUP BY MONTH(Payment_Date), MONTHNAME(Payment_Date)
 ORDER BY MONTH(Payment_Date);
 
 
--- ==========================================
+
 -- 3. TOP 5 PRODUCTS BY PAID REVENUE
--- ==========================================
+
 
 SELECT
     P.Product_Name,
@@ -49,9 +41,9 @@ ORDER BY Total_Revenue DESC
 LIMIT 5;
 
 
--- ==========================================
+
 -- 4. TOP 5 CUSTOMERS BY PAID SPENDING
--- ==========================================
+
 
 SELECT
     C.Customer_ID,
@@ -69,9 +61,9 @@ ORDER BY Total_Spending DESC
 LIMIT 5;
 
 
--- ==========================================
+
 -- 5. REVENUE BY CITY
--- ==========================================
+
 
 SELECT
     C.City,
@@ -86,9 +78,9 @@ GROUP BY C.City
 ORDER BY City_Revenue DESC;
 
 
--- ==========================================
+
 -- 6. REPEAT CUSTOMERS
--- ==========================================
+
 
 SELECT
     C.Customer_ID,
@@ -106,9 +98,9 @@ HAVING COUNT(PY.Payment_ID) > 1
 ORDER BY Paid_Order_Count DESC;
 
 
--- ==========================================
+
 -- 7. PAYMENT METHOD ANALYSIS
--- ==========================================
+
 
 SELECT
     Payment_Method,
@@ -120,9 +112,9 @@ GROUP BY Payment_Method
 ORDER BY Total_Amount DESC;
 
 
--- ==========================================
+
 -- 8. ORDER STATUS ANALYSIS
--- ==========================================
+
 
 SELECT
     Status,
@@ -131,9 +123,9 @@ FROM Orders
 GROUP BY Status;
 
 
--- ==========================================
+
 -- 9. CANCELLED AND REFUNDED ORDERS
--- ==========================================
+
 
 SELECT
     O.Status AS Order_Status,
@@ -148,9 +140,8 @@ WHERE O.Status = 'Cancelled'
 GROUP BY O.Status, PY.Payment_Status;
 
 
--- ==========================================
+
 -- 10. REVENUE BY PRODUCT CATEGORY
--- ==========================================
 
 SELECT
     P.Category,
@@ -165,9 +156,9 @@ GROUP BY P.Category
 ORDER BY Category_Revenue DESC;
 
 
--- ==========================================
+
 -- 11. AVERAGE ORDER VALUE
--- ==========================================
+
 
 SELECT
     AVG(Amount) AS Average_Order_Value
@@ -175,9 +166,9 @@ FROM Payments
 WHERE Payment_Status = 'Paid';
 
 
--- ==========================================
+
 -- 12. PRODUCTS NEVER PURCHASED IN PAID ORDERS
--- ==========================================
+
 
 SELECT
     P.Product_ID,
@@ -191,9 +182,9 @@ LEFT JOIN Payments PY
 WHERE PY.Payment_ID IS NULL;
 
 
--- ==========================================
+
 -- 13. FINAL BUSINESS SUMMARY
--- ==========================================
+
 
 SELECT
     'Total Paid Revenue' AS Metric,
